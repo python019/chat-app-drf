@@ -29,3 +29,54 @@ class TestGenericFunctions(APITestCase):
         token = get_refresh_token()
 
         self.assertTrue(token)
+
+
+class TestAuth(APITestCase):
+    login_url = "/user/login"
+    register_url = "/user/register"
+    refresh_url = "/user/refresh"
+
+    def test_register(self):
+        payload = {
+            "username": "jumayev",
+            "password": "subux123"
+        }
+
+        response = self.client.post(self.register_url, data=payload)
+
+        self.assertEqual(response.status_code, 201)
+    
+    def test_login(self):
+        payload = {
+            "username": "jumayev",
+            "password": "subux123"
+        }
+
+        self.client.post(self.register_url, data=payload)
+
+        response = self.client.post(self.login_url, data=payload)
+        result = response.json()
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTrue(result["access"])
+        self.assertTrue(result["refresh"])
+    
+    def test_refresh(self):
+        payload = {
+            "username": "jumayev",
+            "password": "subux123"
+        }
+
+        self.client.post(self.register_url, data=payload)
+
+        response = self.client.post(self.login_url, data=payload)
+        refresh = response.json()["refresh"]
+
+        response = self.client.post(self.refresh_url, data={"refresh": refresh})
+        result = response.json()
+
+        self.assertEqual(response.status_code, 200)
+
+        # self.assertTrue(result["access"])
+        # self.assertTrue(result["refresh"])

@@ -67,7 +67,7 @@ class RegisterView(APIView):
 
         CustomUser.objects._create_user(**serializer.validated_data)
 
-        return Response({"success": "User created."})
+        return Response({"success": "User created."}, status=201)
 
 
 class RefreshView(APIView):
